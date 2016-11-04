@@ -39,3 +39,6 @@ jspm_packages
 # IntelliJ Webstorm
 .idea
 
+# The directory I built the sitemap out of, using the 'tree' command
+.sitemap
+

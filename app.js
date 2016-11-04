@@ -56,5 +56,7 @@ app.use(function(err, req, res, next) {
   });
 });
 
+var nba = require('nba');
 
+console.log(nba.stats.commonTeamRoster({TeamID:"1610612738"}).then(function(obj){console.log(obj)}));
 module.exports = app;

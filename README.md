@@ -25,19 +25,51 @@ results will be saved for posterity or something, I don't know.
 
 ##Wireframes
 
+
+
 ##Site Map
 
 ##Use Casing
+
+First, all users must log in. Then, they can:
+
+a. Select an upcoming game and make one or more predictions of some parameter of the game
+
+b. After a game, they can see if their prediction was right or wrong and points earned
+
+c. Add and delete friends
+
+d. View their own activity feed, or those of their friends, containing previous predictions and outcomes
  
 ##Research
-* **User Authentication - 6 points**
+* **JavaScript Unit Testing: 4 points**
+    * To speed up development by not having to manually run tests, and catch more errors
+    * [Mocha](https://github.com/mochajs/mocha) most likely, since we've used it before
+    * Will need to test stuff like scorekeeping and authentication
+
+* **User Authentication: 6 points**
     * Obviously, having user accounts with saved info means we need authentication
     * I will use [Passport.js](http://passportjs.org/) to implement user authentication
     * Handling credentials internally is probably the easiest (local strategy), but OAuth may make more sense if this
      were a real app
      
-* **CSS Framework - 2 points**
+* **CSS Framework: 2 points**
     * To provide an aesthetically pleasing and usable interface across form factors
     * Implement [Material Design](https://material.google.com/) visual elements and appropriate layouts for both 
     small and large screens
     * Possible frameworks: [Materialize](http://materializecss.com/), [MUI](https://www.muicss.com/), [MDL](https://getmdl.io/index.html)
+    
+* **Server-Side Javascript: 3 points**
+    * To get NBA box scores, player stats, and other necessary data from the NBA website
+    * There is a Node.js package that wraps the NBA API, so I will use that
+    * It is simply called [nba](https://www.npmjs.com/package/nba)
+    * The NBA API is public (and keyless), but not officially documented and subject to change, so I hope these 
+    people take care of it for me
+    * I'm not sure yet how difficult it is to use, so the point value is a stand-in
+    
+* ***External API: 5 points***
+    * *I will only do this if the nba package does not work out*
+    * Through tedious manual inspection of pages on [stats.nba.com](http://stats.nba.com/), it seems possible to 
+    figure out the correct API calls for the data I need
+    * I'd rather not have to go this route, because it sounds difficult
+    * I could also write a web scraper too, but that seems inefficient

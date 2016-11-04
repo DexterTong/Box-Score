@@ -25,7 +25,7 @@ results will be saved for posterity or something, I don't know.
 
 ##Wireframes
 
-[Wireframes](/documentation/Wireframes.jpg?raw=true "Wireframes")
+![Wireframes](/documentation/Wireframes.jpg?raw=true "Wireframes")
 
 ##Site Map
 

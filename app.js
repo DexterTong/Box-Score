@@ -5,11 +5,11 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
-
-var User = require(path.join(__dirname, 'models', 'user'));
-
 var passport = require('passport');
-//var localStrategy = require('passport-local').Strategy;
+var cookieSession = require('cookie-session')
+
+mongoose.Promise = global.Promise;
+
 
 var app = express();
 
@@ -24,10 +24,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-mongoose.Promise = global.Promise;
-
+app.use(cookieSession({keys: ['JustinHoliday', 'SashaVujacic']}));
+app.use(passport.initialize());
+app.use(passport.session());
 app.use('/', require(path.join(__dirname, 'routes', 'base')));
 
+var User = require(path.join(__dirname, 'models', 'user'));
 passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());

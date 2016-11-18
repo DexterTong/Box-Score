@@ -42,3 +42,5 @@ jspm_packages
 # The directory I built the sitemap out of, using the 'tree' command
 .sitemap
 
+# Self-explanatory
+.DO-NOT-COMMIT

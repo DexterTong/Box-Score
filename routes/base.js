@@ -5,12 +5,12 @@ var router = express.Router();
 var User = require(path.join(__dirname, '..', 'models', 'user'));
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-    res.render('index', { title: 'Express', username: req.user.username });
+router.get('/', isAuthenticated, function(req, res, next) {
+    res.render('index', { title: 'Express', username: getUsername(req) });
 });
 
 router.get('/login', function(req, res){
-   res.render('login', {title: 'Login', username: req.user.username });
+   res.render('login', {title: 'Login', username: getUsername(req) });
 });
 
 router.post('/login', passport.authenticate('local'), function(req, res) {
@@ -18,7 +18,7 @@ router.post('/login', passport.authenticate('local'), function(req, res) {
 });
 
 router.get('/register', function(req, res){
-    res.render('register', {title: 'Register', username: req.user.username });
+    res.render('register', {title: 'Register', username: getUsername(req) });
 });
 
 router.post('/register', function(req, res){
@@ -36,5 +36,16 @@ router.get('/logout', function(req, res){
     req.logout();
     res.redirect('/');
 });
+
+function getUsername(req){
+    if(req.isAuthenticated())
+        return req.user.username;
+}
+
+function isAuthenticated(req, res, next){
+    if(req.isAuthenticated())
+        return next();
+    res.redirect('/login');
+}
 
 module.exports = router;

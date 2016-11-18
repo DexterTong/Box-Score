@@ -12,7 +12,11 @@
             <a href="/logout">logout</a>
         </nav>
         <div>
-            Hello, {{{username}}}
+            {{#if username}}
+                Hello, {{{username}}}
+                {{else}}
+                Not logged in.
+            {{/if}}
         </div>
         {{{body}}}
     </body>

@@ -5,17 +5,22 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
     </head>
     <body>
+        <h1>{{title}}</h1>
         <nav>
             <a href="/">home</a>
-            <a href="/login">login</a>
-            <a href="/register">register</a>
-            <a href="/logout">logout</a>
+            {{#if user.username}}
+                <a href="/settings">settings</a>
+                <a href="/logout">logout</a>
+            {{else}}
+                <a href="/login">login</a>
+                <a href="/register">register</a>
+            {{/if}}
         </nav>
         <div>
-            {{#if username}}
-                Hello, {{{username}}}
+            {{#if user.username}}
+                Hello, {{{user.username}}}
                 {{else}}
-                Not logged in.
+                Not logged in, or you're on login or register.
             {{/if}}
         </div>
         {{{body}}}

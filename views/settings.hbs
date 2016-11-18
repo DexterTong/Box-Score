@@ -1,0 +1,11 @@
+<h2>Here you can change your settings</h2>
+<form method="post" action="/settings">
+    First Name: <input type="text" name="firstName" value={{user.firstName}}><br>
+    Last Name: <input type="text" name="lastName" value={{user.lastName}}><br>
+    Favorite Team: <select name="favoriteTeam">
+        {{#each team}}
+            <option value={{this.teamId}} {{ifequal this.teamId ../user.favoriteTeam}}>{{this.fullName}}</option>
+        {{/each}}
+    </select>
+    <input type="submit">
+</form>

@@ -6,7 +6,9 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var passport = require('passport');
-var cookieSession = require('cookie-session')
+var cookieSession = require('cookie-session');
+var nba = require('nba');
+var hbs = require('hbs');
 
 mongoose.Promise = global.Promise;
 
@@ -17,13 +19,13 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
-// uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+//TODO: Put secret keys in non-repo file
 app.use(cookieSession({keys: ['JustinHoliday', 'SashaVujacic']}));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -65,17 +67,22 @@ app.use(function (err, req, res, next) {
     });
 });
 
-var nba = require('nba');
 /*
 console.log(nba.stats.commonTeamRoster({TeamID: "1610612738"}).then(function (obj) {
     console.log(obj)
 }));
 */
 
+//TODO: Authentication for DB, store credentials off-repo
 mongoose.connect('mongodb://localhost/box-score', function(err) {
     if (err)
         console.log('Unable to connect to MongoDB.');
 });
 
+hbs.registerHelper('ifequal', function(arg1, arg2){
+    console.log(arg1, arg2);
+    if(arg1 == arg2)
+        return 'selected';
+});
 
 module.exports = app;

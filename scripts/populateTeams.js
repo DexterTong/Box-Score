@@ -2,11 +2,7 @@ var path = require('path');
 var mongoose = require('mongoose');
 var nba = require('nba');
 var Team = require(path.join(__dirname, '..', 'models', 'team'));
-
-mongoose.connect('mongodb://localhost/box-score', function(err) {
-    if (err)
-        console.log('Unable to connect to MongoDB.');
-});
+require(path.join(__dirname, '..', 'db'));
 
 nba.teams.forEach(function(team){
     var currentTeam = new Team({

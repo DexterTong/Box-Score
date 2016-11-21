@@ -9,9 +9,9 @@ var passport = require('passport');
 var cookieSession = require('cookie-session');
 var nba = require('nba');
 var hbs = require('hbs');
+require('./db.js');
 
-mongoose.Promise = global.Promise;
-
+//mongoose.Promise = global.Promise;
 
 var app = express();
 
@@ -72,12 +72,6 @@ console.log(nba.stats.commonTeamRoster({TeamID: "1610612738"}).then(function (ob
     console.log(obj)
 }));
 */
-
-//TODO: Authentication for DB, store credentials off-repo
-mongoose.connect('mongodb://localhost/box-score', function(err) {
-    if (err)
-        console.log('Unable to connect to MongoDB.');
-});
 
 hbs.registerHelper('ifequal', function(arg1, arg2){
     console.log(arg1, arg2);

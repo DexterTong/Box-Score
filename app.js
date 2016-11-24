@@ -9,6 +9,7 @@ var passport = require('passport');
 var cookieSession = require('cookie-session');
 var nba = require('nba');
 var hbs = require('hbs');
+var fs = require('fs');
 require('./db.js');
 
 //mongoose.Promise = global.Promise;
@@ -25,8 +26,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-//TODO: Put secret keys in non-repo file
-app.use(cookieSession({keys: ['JustinHoliday', 'SashaVujacic']}));
+app.use(cookieSession(generateCookieSessionOptions()));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use('/', require(path.join(__dirname, 'routes', 'base')));
@@ -78,5 +78,17 @@ hbs.registerHelper('ifequal', function(arg1, arg2){
     if(arg1 == arg2)
         return 'selected';
 });
+
+function generateCookieSessionOptions(){
+    var options = {
+        maxAge: 604800000,
+        name: "session",
+        httpOnly: true,
+        signed: true
+    };
+    var config = JSON.parse(fs.readFileSync(path.join(__dirname, 'config.json')));
+    options.keys = config.cookieSession.keys;
+    return options;
+}
 
 module.exports = app;

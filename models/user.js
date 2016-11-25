@@ -6,10 +6,9 @@ var User = new mongoose.Schema({
     // username: stuff
     // hash: stuff
     // salt: stuff
-    firstName: {type: String},
-    lastName: {type: String},
-    favoriteTeam: {type: Number},
-
+    firstName: {type: String, default: ""},
+    lastName: {type: String, default: ""},
+    favoriteTeam: { type: mongoose.Schema.Types.ObjectId, ref: 'Team', default: null },
     predictions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Prediction' }],
     friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     score : { type: Number, default: 0}

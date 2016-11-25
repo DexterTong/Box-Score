@@ -10,7 +10,8 @@ var cookieSession = require('cookie-session');
 var nba = require('nba');
 var hbs = require('hbs');
 var fs = require('fs');
-require('./db.js');
+require('./db');
+require('./handlebarHelper');
 
 //mongoose.Promise = global.Promise;
 
@@ -47,37 +48,25 @@ app.use(function (req, res, next) {
 
 // development error handler
 // will print stacktrace
-if (app.get('env') === 'development') {
-    app.use(function (err, req, res, next) {
-        res.status(err.status || 500);
-        res.render('error', {
-            message: err.message,
-            error: err
-        });
-    });
-}
-
-// production error handler
-// no stacktraces leaked to user
 app.use(function (err, req, res, next) {
     res.status(err.status || 500);
     res.render('error', {
         message: err.message,
-        error: {}
+        error: err
     });
 });
 
-/*
-console.log(nba.stats.commonTeamRoster({TeamID: "1610612738"}).then(function (obj) {
-    console.log(obj)
-}));
-*/
-
-hbs.registerHelper('ifequal', function(arg1, arg2){
-    console.log(arg1, arg2);
-    if(arg1 == arg2)
-        return 'selected';
-});
+// production error handler
+// no stacktraces leaked to user
+if (process.env.NODE_ENV === 'PRODUCTION') {
+    app.use(function (err, req, res, next) {
+        res.status(err.status || 500);
+        res.render('error', {
+            message: err.message,
+            error: {}
+        });
+    });
+}
 
 function generateCookieSessionOptions(){
     var options = {

@@ -1,6 +1,7 @@
 var express = require('express');
 var passport = require('passport');
 var path = require('path');
+var mongoose = require('mongoose');
 var router = express.Router();
 var User = require(path.join(__dirname, '..', 'models', 'user'));
 var Team = require(path.join(__dirname, '..', 'models', 'team'));
@@ -22,8 +23,8 @@ router.get('/register', isNotAuthenticated, function(req, res){
     res.render('register', {title: 'Register'});
 });
 
-router.post('/register', isNotAuthenticated, function(req, res){
-    User.register(new User({username: req.body.username, firstName:'', lastName:'', favoriteTeam:0}), req.body.password, function(err){
+router.post('/register', isNotAuthenticated, function(req, res, next){
+    User.register(new User({username: req.body.username, firstName:'', lastName:'', favoriteTeam:null}), req.body.password, function(err){
         if(err){
             console.log('Registration error.', err);
             return next(err);
@@ -52,7 +53,7 @@ router.post('/settings', isAuthenticated, function(req, res){
     User.findById(req.user._id, function(err, user){
         user.firstName = req.body.firstName;
         user.lastName = req.body.lastName;
-        user.favoriteTeam = req.body.favoriteTeam;
+        user.favoriteTeam = mongoose.Types.ObjectId(req.body.favoriteTeam);
         user.save(function(err, req){
             console.log(err, req);
         });

@@ -9,6 +9,7 @@
         <nav>
             <a href="/">home</a>
             {{#if thisUser.username}}
+                <a href="/user/{{thisUser.username}}">me</a>
                 <a href="/settings">settings</a>
                 <a href="/logout">logout</a>
             {{else}}

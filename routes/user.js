@@ -8,12 +8,15 @@ var helper = require(path.join(__dirname, '..', 'helpers', 'routeHelpers'));
 
 //TODO: display user info, bets, etc
 router.get('/:user', function(req, res){
-    User.findOne({username: req.params.user}, function(err, userFound){
-        if(err) {
-            console.log('err');
+    User.findOne({username: req.params.user}, function(err, user){
+        if(err)
             return res.status(500);
-        }
-        return res.render(path.join('user', 'user'), {userFound: userFound});
+        Team.findById(user.favoriteTeam, function(err, team){
+            if(err)
+                return res.status(500);
+            var title = 'This is the userpage of ' + user.username;
+            return res.render(path.join('user', 'user'), {user: user, teamName: team.fullName, title: title});
+        });
     });
 });
 

@@ -10,8 +10,8 @@ var cookieSession = require('cookie-session');
 var nba = require('nba');
 var hbs = require('hbs');
 var fs = require('fs');
-require('./db');
-require('./handlebarHelper');
+require(path.join(__dirname, 'db'));
+require(path.join(__dirname, 'handlebarHelper'));
 
 //mongoose.Promise = global.Promise;
 
@@ -31,6 +31,7 @@ app.use(cookieSession(generateCookieSessionOptions()));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use('/', require(path.join(__dirname, 'routes', 'base')));
+app.use('/user', require(path.join(__dirname, 'routes', 'user')));
 
 var User = require(path.join(__dirname, 'models', 'user'));
 passport.use(User.createStrategy());
@@ -70,7 +71,7 @@ if (process.env.NODE_ENV === 'PRODUCTION') {
 
 function generateCookieSessionOptions(){
     var options = {
-        maxAge: 604800000,
+        maxAge: 604800000,  //This is exactly 1 week in ms
         name: "session",
         httpOnly: true,
         signed: true

@@ -5,11 +5,11 @@ var mongoose = require('mongoose');
 var router = express.Router();
 var User = require(path.join(__dirname, '..', 'models', 'user'));
 var Team = require(path.join(__dirname, '..', 'models', 'team'));
-var helper = require(path.join(__dirname, 'routeHelpers'));
+var helper = require(path.join(__dirname, '..', 'helpers', 'routeHelpers'));
 
 /* GET home page. */
 router.get('/', helper.isAuthenticated, function(req, res, next) {
-    res.render('index', { title: 'Box Score', user:req.user });
+    res.render('index', { title: 'Box Score'});
 });
 
 router.get('/login', helper.isNotAuthenticated, function(req, res){
@@ -45,7 +45,7 @@ router.get('/settings', helper.isAuthenticated, function(req, res){
         if(err)
             return res.status(500);
         User.findById(req.user._id, function(err, user){
-            res.render('settings', {title:'Settings', user:user, team:teams});
+            res.render('settings', {title:'Settings', team:teams});
         })
     });
 });

@@ -8,7 +8,7 @@
         <h1>{{title}}</h1>
         <nav>
             <a href="/">home</a>
-            {{#if user.username}}
+            {{#if thisUser.username}}
                 <a href="/settings">settings</a>
                 <a href="/logout">logout</a>
             {{else}}
@@ -17,10 +17,10 @@
             {{/if}}
         </nav>
         <div>
-            {{#if user.username}}
-                Hello, {{{user.username}}}
+            {{#if thisUser.username}}
+                Hello, {{{thisUser.username}}}
                 {{else}}
-                Not logged in, or you're on login or register.
+                Not logged in.
             {{/if}}
         </div>
         {{{body}}}

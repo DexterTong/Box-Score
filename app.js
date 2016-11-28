@@ -10,8 +10,11 @@ var cookieSession = require('cookie-session');
 var nba = require('nba');
 var hbs = require('hbs');
 var fs = require('fs');
+var cookieSessionOptions = require(path.join(__dirname, 'middleware', 'cookieSessionOptions'));
+var thisUser = require(path.join(__dirname, 'middleware', 'thisUser'));
+
 require(path.join(__dirname, 'db'));
-require(path.join(__dirname, 'handlebarHelper'));
+require(path.join(__dirname, 'helpers', 'handlebarHelpers'));
 
 //mongoose.Promise = global.Promise;
 
@@ -27,9 +30,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(cookieSession(generateCookieSessionOptions()));
+app.use(cookieSession(cookieSessionOptions.cookieSessionOptions()));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(thisUser.thisUser);
 app.use('/', require(path.join(__dirname, 'routes', 'base')));
 app.use('/user', require(path.join(__dirname, 'routes', 'user')));
 
@@ -67,18 +71,6 @@ if (process.env.NODE_ENV === 'PRODUCTION') {
             error: {}
         });
     });
-}
-
-function generateCookieSessionOptions(){
-    var options = {
-        maxAge: 604800000,  //This is exactly 1 week in ms
-        name: "session",
-        httpOnly: true,
-        signed: true
-    };
-    var config = JSON.parse(fs.readFileSync(path.join(__dirname, 'config.json')));
-    options.keys = config.cookieSession.keys;
-    return options;
 }
 
 module.exports = app;

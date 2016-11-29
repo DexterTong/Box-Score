@@ -6,7 +6,7 @@ var Team = new mongoose.Schema({
     fullName: {type: String, required: true},
     name: {type: String, required: true},
     city: {type: String, required: true},
-    players: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Player' }]
+    players: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Player', default: [] }]
 });
 
 module.exports = mongoose.model('Team', Team);

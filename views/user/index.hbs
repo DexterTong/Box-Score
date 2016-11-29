@@ -1,0 +1,9 @@
+<form method="get" action="">
+    Username: <input type="text" name="username"><br>
+    <input type="submit">
+</form>
+<table>
+    {{#each user}}
+        <tr><td>{{this.username}}</td><td>{{this.score}}</td></tr>
+    {{/each}}
+</table>

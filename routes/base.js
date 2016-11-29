@@ -5,14 +5,14 @@ var mongoose = require('mongoose');
 var router = express.Router();
 var User = require(path.join(__dirname, '..', 'models', 'user'));
 var Team = require(path.join(__dirname, '..', 'models', 'team'));
-var helper = require(path.join(__dirname, '..', 'helpers', 'routeHelpers'));
+var auth = require(path.join(__dirname, '..', 'middleware', 'authentication'));
 
 /* GET home page. */
-router.get('/', helper.isAuthenticated, function(req, res, next) {
+router.get('/', auth.isAuthenticated, function(req, res, next) {
     res.render('index', { title: 'Box Score'});
 });
 
-router.get('/login', helper.isNotAuthenticated, function(req, res){
+router.get('/login', auth.isNotAuthenticated, function(req, res){
    res.render('login', {title: 'Login'});
 });
 
@@ -20,15 +20,15 @@ router.post('/login', passport.authenticate('local'), function(req, res) {
     res.redirect('/');
 });
 
-router.get('/register', helper.isNotAuthenticated, function(req, res){
+router.get('/register', auth.isNotAuthenticated, function(req, res){
     res.render('register', {title: 'Register'});
 });
 
-router.post('/register', helper.isNotAuthenticated, function(req, res, next){
+router.post('/register', auth.isNotAuthenticated, function(req, res, next){
     User.register(new User({username: req.body.username, firstName:'', lastName:'', favoriteTeam:null}), req.body.password, function(err){
         if(err){
             console.log('Registration error.', err);
-            return next(err);
+            return res.status(500);
         }
     });
     console.log('Registration successful');
@@ -40,23 +40,28 @@ router.get('/logout', function(req, res){
     res.redirect('/');
 });
 
-router.get('/settings', helper.isAuthenticated, function(req, res){
+router.get('/settings', auth.isAuthenticated, function(req, res){
     Team.find(function(err, teams){
-        if(err)
+        if(err) {
+            console.log(err);
             return res.status(500);
+        }
         User.findById(req.user._id, function(err, user){
             res.render('settings', {title:'Settings', team:teams});
-        })
+        });
     });
 });
 
-router.post('/settings', helper.isAuthenticated, function(req, res){
+router.post('/settings', auth.isAuthenticated, function(req, res){
     User.findById(req.user._id, function(err, user){
         user.firstName = req.body.firstName;
         user.lastName = req.body.lastName;
         user.favoriteTeam = mongoose.Types.ObjectId(req.body.favoriteTeam);
-        user.save(function(err, req){
-            console.log(err, req);
+        user.save(function(err){
+            if(err){
+                console.log(err);
+                return res.status(500);
+            }
         });
         res.redirect('/settings');
     });

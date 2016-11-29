@@ -10,14 +10,12 @@ var auth = require(path.join(__dirname, '..', 'middleware', 'authentication'));
 router.get('/', function(req, res){
     var title;
     if(req.query.username) {
-        console.log('You searched for', req.query.username);
         title = 'Results for \'' + req.query.username + '\'';
         User.find({username: {"$regex": req.query.username, "$options": "i" }}, function(err, users){
            if(err) {
                console.log(err);
                return res.status(500);
            }
-           console.log(users);
            return res.render(path.join('user', 'index'), {title: title, user: users});
         });
     }
@@ -35,13 +33,20 @@ router.get('/:user', auth.isAuthenticated, function(req, res){
             console.log(err);
             return res.status(500);
         }
+        if(!user) {
+            // user requested DNE
+            return res.redirect('/');
+        }
         Team.findById(user.favoriteTeam, function(err, team){
             if(err) {
                 console.log(err);
                 return res.status(500);
             }
+            var teamName;
+            if(team)
+                teamName = team.fullName;
             var title = user.username + '\'s page';
-            return res.render(path.join('user', 'user'), {user: user, teamName: team.fullName, title: title});
+            return res.render(path.join('user', 'user'), {user: user, teamName: teamName, title: title});
         });
     });
 });

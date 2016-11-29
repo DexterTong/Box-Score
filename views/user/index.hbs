@@ -4,6 +4,6 @@
 </form>
 <table>
     {{#each user}}
-        <tr><td>{{this.username}}</td><td>{{this.score}}</td></tr>
+        <tr><td><a href="/user/{{this.username}}">{{this.username}}</a></td></tr>
     {{/each}}
 </table>

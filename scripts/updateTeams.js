@@ -4,6 +4,9 @@ var nba = require('nba');
 var Team = require(path.join(__dirname, '..', 'models', 'team'));
 require(path.join(__dirname, '..', 'db'));
 
+//TODO: call updateTeams, use then or promise before updating team data
+//nba.updateTeams()
+
 nba.teams.forEach(function(team){
     var currentTeam = {
         teamId: team.teamId,

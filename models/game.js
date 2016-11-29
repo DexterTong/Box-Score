@@ -5,7 +5,7 @@ var Game = new mongoose.Schema({
         type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Team' }],
         validate: {
             validator: function(teamArr){
-                return teamArr.length == 2;
+                return teamArr.length === 2;
             },
             message: 'A Basketball game is between exactly 2 teams.'
         }},

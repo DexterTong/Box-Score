@@ -2,13 +2,11 @@ var path = require('path');
 var mongoose = require('mongoose');
 var nba = require('nba');
 var Player = require(path.join(__dirname, '..', 'models', 'player'));
+var Team = require(path.join(__dirname, '..', 'models', 'team'));
 
 require(path.join(__dirname, '..', 'db'));
 
 //TODO: call nba.updatePlayers beforehand, update after promise/then
-
-//TODO: add players to DB
-
 
 nba.players.forEach(function (obj) {
     var player = {
@@ -25,5 +23,4 @@ nba.players.forEach(function (obj) {
     });
 });
 console.log('Updated player data successfully');
-
 mongoose.disconnect();

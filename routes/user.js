@@ -44,7 +44,7 @@ router.get('/:user', auth.isAuthenticated, function(req, res){
             }
             var teamName;
             if(team)
-                teamName = team.fullName;
+                teamName = team.city + ' ' + team.name;
             var title = user.username + '\'s page';
             return res.render(path.join('user', 'user'), {user: user, teamName: teamName, title: title});
         });

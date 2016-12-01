@@ -46,17 +46,21 @@ router.get('/settings', auth.isAuthenticated, function(req, res){
             console.log(err);
             return res.status(500);
         }
+        teams.unshift({_id:'', city: '', name: ''});
         User.findById(req.user._id, function(err, user){
             res.render('settings', {title:'Settings', team:teams});
         });
-    });
+    }).sort("city");
 });
 
 router.post('/settings', auth.isAuthenticated, function(req, res){
     User.findById(req.user._id, function(err, user){
         user.firstName = req.body.firstName;
         user.lastName = req.body.lastName;
-        user.favoriteTeam = mongoose.Types.ObjectId(req.body.favoriteTeam);
+        if(req.body.favoriteTeam)
+            user.favoriteTeam = mongoose.Types.ObjectId(req.body.favoriteTeam);
+        else
+            user.favoriteTeam = null;
         user.save(function(err){
             if(err){
                 console.log(err);

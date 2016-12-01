@@ -6,18 +6,17 @@ var Team = require(path.join(__dirname, '..', 'models', 'team'));
 
 require(path.join(__dirname, '..', 'db'));
 
-//TODO: call nba.updatePlayers beforehand, update after promise/then
-
-
 var teamIdDict = {};
 
-Team.find({}, function (err, teams) {
-    if (err)
-        console.log(err);
-    teams.forEach(function (team) {
-        teamIdDict[team.teamId] = team._id;
-    });
-}).then(updatePlayers).then(disconnect);
+nba.updatePlayers().then(
+    Team.find({}, function (err, teams) {
+        if (err)
+            console.log(err);
+        teams.forEach(function (team) {
+            teamIdDict[team.teamId] = team._id;
+        });
+    }).then(updatePlayers).then(disconnect)
+);
 
 function updatePlayers() {
     console.log(teamIdDict);
@@ -28,7 +27,6 @@ function updatePlayers() {
             lastName: obj.lastName,
             team: teamIdDict[obj.teamId]
         };
-        //console.log(teamIdDict[obj.teamId]);
         var query = {playerId: obj.playerId};
         var update = player;
         var options = {upsert: true, setDefaultsOnInsert: true};

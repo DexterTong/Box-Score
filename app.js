@@ -10,13 +10,14 @@ var cookieSession = require('cookie-session');
 var nba = require('nba');
 var hbs = require('hbs');
 var fs = require('fs');
+var Promise = require('promise');
 var cookieSessionOptions = require(path.join(__dirname, 'middleware', 'cookieSessionOptions'));
 var thisUser = require(path.join(__dirname, 'middleware', 'thisUser'));
 
 require(path.join(__dirname, 'db'));
 require(path.join(__dirname, 'helpers', 'handlebarHelpers'));
 
-//mongoose.Promise = global.Promise;
+mongoose.Promise = Promise;
 
 var app = express();
 

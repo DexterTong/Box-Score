@@ -11,39 +11,37 @@ require(path.join(__dirname, '..', 'db'));
 
 var teamIdDict = {};
 
-nba.updatePlayers().then(
-    Team.find({}, function (err, teams) {
-        if (err)
-            console.log(err);
-        teams.forEach(function (team) {
-            teamIdDict[team.teamId] = team._id;
-        });
-    })
-).then(updatePlayers);
-
-function updatePlayers() {
-    nba.players.forEach(function (obj) {
-        var teamId = teamIdDict[obj.teamId];
-        var player = {
-            playerId: obj.playerId,
-            firstName: obj.firstName,
-            lastName: obj.lastName,
-            team: teamId
-        };
-        var query = {playerId: obj.playerId};
-        var update = player;
-        var options = {upsert: true, setDefaultsOnInsert: true, new: true};
-        Player.findOneAndUpdate(query, update, options, function (err, res) {
+nba.updatePlayers()
+    .then(
+        Team.find({}, function (err, teams) {
             if (err)
                 console.log(err);
-            Team.findByIdAndUpdate(teamId, {$addToSet: {"players": res._id}}, function (err, res) {
-                if (err)
-                    console.log(err);
+            teams.forEach(function (team) {
+                teamIdDict[team.teamId] = team._id;
             });
+        })
+    )
+    .then(function () {
+        var promises = [];
+        nba.players.forEach(function (obj) {
+            var teamId = teamIdDict[obj.teamId];
+            var player = {
+                playerId: obj.playerId,
+                firstName: obj.firstName,
+                lastName: obj.lastName,
+                team: teamId
+            };
+            var query = {playerId: obj.playerId};
+            var update = player;
+            var options = {upsert: true, setDefaultsOnInsert: true, new: true};
+            promises.push(Player.findOneAndUpdate(query, update, options).exec()
+                .then(function (res) {
+                    Team.findByIdAndUpdate(teamId, {$addToSet: {"players": res._id}}).exec();
+                })
+            );
         });
+        Promise.all(promises)
+            .then(function () {
+                mongoose.disconnect();
+            });
     });
-}
-
-function disconnect() {
-    mongoose.disconnect();
-}

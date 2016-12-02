@@ -2,10 +2,13 @@ var express = require('express');
 var passport = require('passport');
 var path = require('path');
 var mongoose = require('mongoose');
+var Promise = require('promise');
 var router = express.Router();
 var User = require(path.join(__dirname, '..', 'models', 'user'));
 var Team = require(path.join(__dirname, '..', 'models', 'team'));
 var auth = require(path.join(__dirname, '..', 'middleware', 'authentication'));
+
+mongoose.Promise = Promise;
 
 /* GET home page. */
 router.get('/', auth.isAuthenticated, function(req, res, next) {
@@ -41,33 +44,39 @@ router.get('/logout', function(req, res){
 });
 
 router.get('/settings', auth.isAuthenticated, function(req, res){
-    Team.find(function(err, teams){
-        if(err) {
+    var p1 = Team.findById(req.user.favoriteTeam).exec();
+    var p2 = Team.find().sort('city').exec();
+    Promise.all([p1, p2])
+        .then(function(results){
+            var favorite = results[0];
+            var teams = results[1];
+            teams.unshift({_id:'', city: '', name: ''});
+            return res.render('settings', {title:'Settings', team: teams, favorite: favorite});
+        })
+        .catch(function(err){
             console.log(err);
             return res.status(500);
-        }
-        teams.unshift({_id:'', city: '', name: ''});
-        User.findById(req.user._id, function(err, user){
-            res.render('settings', {title:'Settings', team:teams});
         });
-    }).sort("city");
 });
 
 router.post('/settings', auth.isAuthenticated, function(req, res){
     User.findById(req.user._id, function(err, user){
+        var promise;
         user.firstName = req.body.firstName;
         user.lastName = req.body.lastName;
         if(req.body.favoriteTeam)
-            user.favoriteTeam = mongoose.Types.ObjectId(req.body.favoriteTeam);
+            promise = Team.findOne({name: req.body.favoriteTeam}).exec();
         else
-            user.favoriteTeam = null;
-        user.save(function(err){
-            if(err){
-                console.log(err);
-                return res.status(500);
-            }
+            promise = Promise.resolve();
+        promise.then(function(favorite){
+            user.favoriteTeam = favorite;
+            return user.save();
+        }).then(function(){
+            return res.redirect('/settings');
+        }).catch(function(err){
+            console.log(err);
+            return res.status(500);
         });
-        res.redirect('/settings');
     });
 });
 

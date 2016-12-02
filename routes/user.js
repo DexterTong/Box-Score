@@ -7,7 +7,7 @@ var Team = require(path.join(__dirname, '..', 'models', 'team'));
 var auth = require(path.join(__dirname, '..', 'middleware', 'authentication'));
 
 //Search for users
-router.get('/', function(req, res){
+router.get('/', auth.isAuthenticated, function(req, res){
     var title;
     if(req.query.username) {
         title = 'Results for \'' + req.query.username + '\'';

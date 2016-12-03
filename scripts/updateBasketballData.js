@@ -96,8 +96,9 @@ function updateGames() {
                     .then(function (teams) {
                         var game = {
                             gameId: parseInt(gameData.gameId),
-                            homeTeam: teams[0]._id,
-                            awayTeam: teams[1]._id,
+                            title: gameData.gamecode,   //TODO: Make a more human-readable title
+                            homeTeam: mongoose.Types.ObjectId(teams[0]._id),
+                            awayTeam: mongoose.Types.ObjectId(teams[1]._id),
                             season: gameData.season,
                             date: Date.parse(gameData.gameDateEst)
                         };

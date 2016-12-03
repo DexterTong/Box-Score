@@ -39,6 +39,7 @@ app.use(thisUser.thisUser);
 app.use('/', require(path.join(__dirname, 'routes', 'base')));
 app.use('/user', require(path.join(__dirname, 'routes', 'user')));
 app.use('/team', require(path.join(__dirname, 'routes', 'team')));
+app.use('/game', require(path.join(__dirname, 'routes', 'game')));
 
 var User = require(path.join(__dirname, 'models', 'user'));
 passport.use(User.createStrategy());

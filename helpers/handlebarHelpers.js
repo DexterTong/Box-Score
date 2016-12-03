@@ -11,8 +11,8 @@ hbs.registerHelper('linkUser', function(username){
    return new hbs.SafeString('<a href="/user/' + username + '">' + username + '</a>');
 });
 
-hbs.registerHelper('linkGame', function(gameId){
-    return new hbs.SafeString('<a href="/game/' + gameId + '">' + gameId + '</a>');
+hbs.registerHelper('linkGame', function(gameId, title){
+    return new hbs.SafeString('<a href="/game/' + gameId + '">' + title + '</a>');
 });
 
 hbs.registerHelper('linkTeam', function(teamName){

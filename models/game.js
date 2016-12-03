@@ -1,19 +1,16 @@
 var mongoose = require('mongoose');
 
 var Game = new mongoose.Schema({
-    teams: {
-        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Team' }],
-        validate: {
-            validator: function(teamArr){
-                return teamArr.length === 2;
-            },
-            message: 'A Basketball game is between exactly 2 teams.'
-        }},
-    date: String,
+    gameId: {type: Number},
+    homeTeam: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' },
+    awayTeam: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' },
+    season: {type: Number},
+    title: String,
+    date: Date,
     time: String,
     status: String,
-    predictions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Prediction' }]
+    predictions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Prediction', default: [] }]
     //May want to include stuff like box score and all, or just request it from NBA website
 });
 
-module.exports('Game', Game);
+module.exports = mongoose.model('Game', Game);

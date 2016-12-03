@@ -1,0 +1,8 @@
+<form method="get" action="/team/redirect">
+    Team: <select name="team">
+    {{#each team}}
+        <option value="{{this.name}}">{{this.city}} {{this.name}}</option>
+    {{/each}}
+</select>
+    <input type="submit">
+</form>

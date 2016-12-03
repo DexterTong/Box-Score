@@ -1,0 +1,21 @@
+<h3>{{linkTeam awayTeam.name}} at {{linkTeam homeTeam.name}}</h3>
+{{game.date}}<br>
+
+<h4>{{linkTeam awayTeam.name}} Roster</h4>
+<table>
+    {{#each awayTeam.players}}
+    <tr><td>{{this.firstName}} {{this.lastName}}</td></tr>
+    {{/each}}
+</table>
+<h4>{{linkTeam homeTeam.name}} Roster</h4>
+<table>
+    {{#each homeTeam.players}}
+        <tr><td>{{this.firstName}} {{this.lastName}}</td></tr>
+    {{/each}}
+</table>
+<h4>Predictions</h4>
+<table>
+    {{#each prediction}}
+        <tr><td>{{linkPrediction}}</td></tr>
+    {{/each}}
+</table>

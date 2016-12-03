@@ -4,7 +4,7 @@
     Last Name: <input type="text" name="lastName" value={{thisUser.lastName}}><br>
     Favorite Team: <select name="favoriteTeam">
         {{#each team}}
-            <option value={{this.name}} {{ifequal this.name ../favorite.name}}>{{this.city}} {{this
+            <option value="{{this.name}}" {{ifequal this.name ../favorite.name}}>{{this.city}} {{this
             .name}}</option>
         {{/each}}
     </select>

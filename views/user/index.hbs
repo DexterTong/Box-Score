@@ -4,6 +4,6 @@
 </form>
 <table>
     {{#each user}}
-        <tr><td><a href="/user/{{this.username}}">{{this.username}}</a></td></tr>
+        <tr><td>{{linkUser this.username}}</td></tr>
     {{/each}}
 </table>

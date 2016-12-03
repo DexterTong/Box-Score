@@ -9,6 +9,9 @@
         <nav>
             <a href="/">Home</a>
             {{#if thisUser.username}}
+                <a href="/game">Games</a>
+                <a href="/team">Teams</a>
+                {{!<a href="/player">Players</a>}}
                 <a href="/user">Users</a>
                 <a href="/settings">Settings</a>
                 <a href="/logout">Logout</a>
@@ -19,7 +22,7 @@
         </nav>
         <div>
             {{#if thisUser.username}}
-                Hello, <a href="/user/{{thisUser.username}}">{{thisUser.username}}</a>
+                Hello, {{linkUser thisUser.username}}
                 {{else}}
                 Not logged in.
             {{/if}}

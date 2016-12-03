@@ -1,9 +1,11 @@
 var path = require('path');
 var mongoose = require('mongoose');
 var nba = require('nba');
+
 var Promise = require('promise');
 var Player = require(path.join(__dirname, '..', 'models', 'player'));
 var Team = require(path.join(__dirname, '..', 'models', 'team'));
+var Game = require(path.join(__dirname, '..', 'models', 'game'));
 
 mongoose.Promise = Promise;
 
@@ -27,9 +29,10 @@ nba.updateTeams()
             promises.push(Team.findOneAndUpdate(query, update, options).exec());
         });
         Promise.all(promises)
-            .then(function(){
+            .then(function () {
                 console.log('Updated team data successfully');
                 updatePlayers();
+                updateGames();
             });
     });
 
@@ -71,5 +74,48 @@ function updatePlayers() {
         })
         .catch(function (err) {
             console.log(err);
+        });
+}
+
+function updateGames() {
+    var date = new Date();
+    var month = date.getMonth() + 1 + '';     //Month ranges from 0 to 11, but date from 1 to 31. Why?!
+    if (month.length === 1)
+        month = '0' + month;
+    var day = date.getDate() + '';
+    if (day.length === 1)
+        day = '0' + day;
+    var today = month + '/' + day + '/' + date.getFullYear();
+    nba.stats.scoreboard({gameDate: today})
+        .then(function (scoreboard) {
+            var promises = [];
+            scoreboard.gameHeader.forEach(function (gameData) {
+                var p1 = Team.findOne({teamId: gameData.homeTeamId}).exec();
+                var p2 = Team.findOne({teamId: gameData.visitorTeamId}).exec();
+                Promise.all([p1, p2])
+                    .then(function (teams) {
+                        var game = {
+                            gameId: parseInt(gameData.gameId),
+                            homeTeam: teams[0]._id,
+                            awayTeam: teams[1]._id,
+                            season: gameData.season,
+                            date: Date.parse(gameData.gameDateEst)
+                        };
+                        var query = {gameId: gameData.gameId};
+                        var update = game;
+                        var options = {upsert: true, setDefaultsOnInsert: true, new: true};
+                        promises.push(Game.findOneAndUpdate(query, update, options).exec());
+                    })
+                    .catch(function (err) {
+                        console.log(err)
+                    });
+            });
+            Promise.all(promises)
+                .then(function () {
+                    console.log('Update game data successfully');
+                });
+        }).catch(
+        function (err) {
+            console.log(err)
         });
 }

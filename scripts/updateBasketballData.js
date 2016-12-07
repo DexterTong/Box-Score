@@ -88,8 +88,8 @@ function updateGames() {
     var today = month + '/' + day + '/' + date.getFullYear();
     nba.stats.scoreboard({gameDate: today})
         .then(function (scoreboard) {
-            var promises = [];
-            scoreboard.gameHeader.forEach(function (gameData) {
+            var games = scoreboard.gameHeader;
+            Promise.all(games.map(function (gameData) {
                 var p1 = Team.findOne({teamId: gameData.homeTeamId}).exec();
                 var p2 = Team.findOne({teamId: gameData.visitorTeamId}).exec();
                 Promise.all([p1, p2])
@@ -99,24 +99,26 @@ function updateGames() {
                             title: gameData.gamecode,   //TODO: Make a more human-readable title
                             homeTeam: mongoose.Types.ObjectId(teams[0]._id),
                             awayTeam: mongoose.Types.ObjectId(teams[1]._id),
-                            season: gameData.season,
+                            season: parseInt(gameData.season),
                             date: Date.parse(gameData.gameDateEst)
                         };
                         var query = {gameId: gameData.gameId};
                         var update = game;
                         var options = {upsert: true, setDefaultsOnInsert: true, new: true};
-                        promises.push(Game.findOneAndUpdate(query, update, options).exec());
+                        return Game.findOneAndUpdate(query, update, options).exec();
                     })
                     .catch(function (err) {
-                        console.log(err)
+                        return console.log(err);
                     });
-            });
-            Promise.all(promises)
+            }))
                 .then(function () {
                     console.log('Update game data successfully');
+                })
+                .catch(function (err) {
+                    return console.log(err);
                 });
-        }).catch(
-        function (err) {
-            console.log(err)
+        })
+        .catch(function (err) {
+            return console.log(err)
         });
 }

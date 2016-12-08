@@ -19,6 +19,9 @@
                 <a href="/login">Login</a>
                 <a href="/register">Register</a>
             {{/if}}
+            {{#if thisUser.isAdmin}}
+                <a href="/admin">Admin</a>
+            {{/if}}
         </nav>
         <div>
             {{#if thisUser.username}}

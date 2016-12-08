@@ -28,6 +28,8 @@ router.get('/register', auth.isNotAuthenticated, function(req, res){
 });
 
 router.post('/register', auth.isNotAuthenticated, function(req, res, next){
+    if(!req.body.username || !req.body.password)
+        return res.status(500);
     User.register(new User({username: req.body.username, firstName:'', lastName:'', favoriteTeam:null}), req.body.password, function(err){
         if(err){
             console.log('Registration error.', err);

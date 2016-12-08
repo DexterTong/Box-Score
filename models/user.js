@@ -11,7 +11,8 @@ var User = new mongoose.Schema({
     favoriteTeam: { type: mongoose.Schema.Types.ObjectId, ref: 'Team', default: null },
     predictions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Prediction' }],
     friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    score : { type: Number, default: 0}
+    score : { type: Number, default: 0},
+    isAdmin : {type: Boolean, default: false}
 });
 
 User.plugin(passportLocalMongoose);

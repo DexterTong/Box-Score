@@ -37,6 +37,7 @@ app.use(passport.session());
 app.use(thisUser.thisUser);
 
 app.use('/', require(path.join(__dirname, 'routes', 'base')));
+app.use('/admin', require(path.join(__dirname, 'routes', 'admin')));
 app.use('/user', require(path.join(__dirname, 'routes', 'user')));
 app.use('/team', require(path.join(__dirname, 'routes', 'team')));
 app.use('/game', require(path.join(__dirname, 'routes', 'game')));

@@ -18,6 +18,7 @@ require(path.join(__dirname, 'db'));
 require(path.join(__dirname, 'helpers', 'handlebarHelpers'));
 
 mongoose.Promise = Promise;
+//mongoose.set('debug', true);
 
 var app = express();
 

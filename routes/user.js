@@ -6,8 +6,10 @@ var User = require(path.join(__dirname, '..', 'models', 'user'));
 var Team = require(path.join(__dirname, '..', 'models', 'team'));
 var auth = require(path.join(__dirname, '..', 'middleware', 'authentication'));
 
+router.use(auth.isAuthenticated);
+
 //Search for users
-router.get('/', auth.isAuthenticated, function(req, res){
+router.get('/', function(req, res){
     var title;
     if(req.query.username) {
         title = 'Results for \'' + req.query.username + '\'';
@@ -27,7 +29,7 @@ router.get('/', auth.isAuthenticated, function(req, res){
 
 //TODO: display user info, bets, etc
 //TODO: handle case when user data fields such as fav team are undefined
-router.get('/:user', auth.isAuthenticated, function(req, res){
+router.get('/:user', function(req, res){
     User.findOne({username: req.params.user}, function(err, user){
         if(err) {
             console.log(err);

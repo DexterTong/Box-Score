@@ -10,14 +10,16 @@ var Team = require(path.join(__dirname, '..', 'models', 'team'));
 var Game = require(path.join(__dirname, '..', 'models', 'game'));
 var auth = require(path.join(__dirname, '..', 'middleware', 'authentication'));
 
-router.get('/', auth.isAuthenticated, function (req, res) {
+router.use(auth.isAuthenticated);
+
+router.get('/', function (req, res) {
     var title = 'All Games';
     Game.find({}, function(err, games){
         return res.render(path.join('game', 'index'), {title: title, game: games});
     });
 });
 
-router.get('/:gameId', auth.isAuthenticated, function(req, res) {
+router.get('/:gameId', function(req, res) {
     Game.findOne({gameId: req.params.gameId}, function(err, game){
         var title = game.title;
         var p1 = Team.findById(game.homeTeam).exec();

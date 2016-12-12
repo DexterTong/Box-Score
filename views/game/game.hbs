@@ -1,14 +1,13 @@
 <h3>{{linkTeam awayTeam.name}} at {{linkTeam homeTeam.name}}</h3>
 {{game.date}}<br>
-
 <h4>{{linkTeam awayTeam.name}} Roster</h4>
-<table>
+<table style="float: left; width:50%">
     {{#each awayTeam.players}}
     <tr><td>{{this.firstName}} {{this.lastName}}</td></tr>
     {{/each}}
 </table>
 <h4>{{linkTeam homeTeam.name}} Roster</h4>
-<table>
+<table style="float: left; width:50%">
     {{#each homeTeam.players}}
         <tr><td>{{this.firstName}} {{this.lastName}}</td></tr>
     {{/each}}
@@ -19,3 +18,10 @@
         <tr><td>{{linkPrediction}}</td></tr>
     {{/each}}
 </table>
+<h4>Add a Prediction</h4>
+<form method="post" action="{{game.gameId}}/prediction">
+    Who will win this game?<br>
+    <input type="radio" name="winner" value={{homeTeam.teamId}}>{{homeTeam.city}} {{homeTeam.name}}<br>
+    <input type="radio" name="winner" value={{awayTeam.teamId}}>{{awayTeam.city}} {{awayTeam.name}}<br>
+    <input type="submit">
+</form>

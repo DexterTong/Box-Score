@@ -15,9 +15,25 @@ router.use(auth.isAuthenticated);
 router.get('/', function (req, res) {
     var title = 'All Games';
     Game.find({}, function(err, games){
-        return res.render(path.join('game', 'index'), {title: title, game: games});
+        var gamesByDate = games.reduce(function(groupedByDate, game){
+            var key = getDate(game.date);
+            console.log(key);
+            if(groupedByDate[key])
+                groupedByDate[key].push(game);
+            else
+                groupedByDate[key] = [game];
+            return groupedByDate;
+        }, {});
+        //console.log(Object.getOwnPropertyNames(gamesByDate));
+        return res.render(path.join('game', 'index'), {title: title, date: gamesByDate});
     });
 });
+
+function getDate(date){
+    var dateString = date.toUTCString();
+    var r = new RegExp(' [0-9]{2}:');
+    return dateString.slice(0, dateString.search(r));
+}
 
 router.get('/:gameId', function(req, res) {
     Game.findOne({gameId: req.params.gameId}, function(err, game){
@@ -37,6 +53,12 @@ router.get('/:gameId', function(req, res) {
                     });
             });
     });
+});
+
+router.post('/:gameId/prediction', function(req, res) {
+    if(!req.body.winner)
+        return res.redirect('.');
+
 });
 
 module.exports = router;

@@ -108,7 +108,7 @@ router.post('/update', function(req, res){
                         .then(function (teams) {
                             var game = {
                                 gameId: parseInt(gameData.gameId),
-                                title: gameData.gamecode,   //TODO: Make a more human-readable title
+                                title: makeTitle(gameData.gamecode),
                                 homeTeam: mongoose.Types.ObjectId(teams[0]._id),
                                 awayTeam: mongoose.Types.ObjectId(teams[1]._id),
                                 season: parseInt(gameData.season),
@@ -135,6 +135,11 @@ router.post('/update', function(req, res){
             });
     }
 });
+
+function makeTitle(gamecode){
+    var teamabbreviations = gamecode.split('/')[1];
+    return teamabbreviations.slice(0, 3) + ' @ ' + teamabbreviations.slice(3);
+}
 
 router.post('/clear', function(req, res){
     Promise.all([Game.remove({}), Player.remove({}), Team.remove({})/*, Prediction.remove({})*/])

@@ -1,3 +1,6 @@
-{{#each game}}
-    {{linkGame this.gameId this.title}}<br>
+{{#each date}}
+    <h3>{{@key}}</h3>
+    {{#each this}}
+        {{linkGame this.gameId this.title}}<br>
+    {{/each}}
 {{/each}}

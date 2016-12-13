@@ -7,6 +7,13 @@ hbs.registerHelper('ifequal', function(arg1, arg2){
         return 'selected';
 });
 
+hbs.registerHelper('displayLastName', function(uname1, uname2, lastName){
+    if(uname1 === uname2)
+        return new hbs.SafeString('<tr> <td>Last Name: </td><td>' + lastName + '</td> </tr>');
+    else
+        return '';
+});
+
 hbs.registerHelper('linkUser', function(username){
    return new hbs.SafeString('<a href="/user/' + username + '">' + username + '</a>');
 });
@@ -18,10 +25,6 @@ hbs.registerHelper('linkGame', function(gameId, title){
 hbs.registerHelper('linkTeam', function(teamName){
     return new hbs.SafeString('<a href="/team/' + teamName + '">' + teamName + '</a>');
 });
-
-/*hbs.registerHelper('linkPlayer', function(playerId){
-    return new hbs.SafeString('<a href="/player/' + playerId + '">' + playerId + '</a>');
-});*/
 
 hbs.registerHelper('linkPrediction', function(prediction){
     return new hbs.SafeString('<a href="/prediction/' + predictionId + '">' + predictionId + '</a>');

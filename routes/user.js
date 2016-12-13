@@ -52,20 +52,17 @@ router.get('/:user', function (req, res) {
                 });
                 return Promise.all(annotatedPredictions);
             });
-        Team.findById(user.favoriteTeam)
-            .then(function (team) {
+        var teamPromise = Team.findById(user.favoriteTeam);
+        Promise.all([predictionsPromise, teamPromise])
+            .then(function(results){
                 var teamName;
-                if (team)
-                    teamName = team.city + ' ' + team.name;
+                console.log('hello');
+                if(results[1])
+                    teamName = results[1].city + ' ' + results[1].name;
                 var title = user.username + '\'s page';
-                return res.render(path.join('user', 'user'), {user: user, teamName: teamName, title: title});
+                return res.render(path.join('user', 'user'),
+                    {user: user, teamName: teamName, title: title, prediction: results[0]});
             })
-            .catch(function (err) {
-                if (err) {
-                    console.log(err);
-                    return res.status(500);
-                }
-            });
     });
 });
 

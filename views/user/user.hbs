@@ -9,3 +9,12 @@
         <td>Score: </td><td>{{user.score}}</td>
     </tr>
 </table>
+
+<h4>Prediction History</h4>
+<table>
+    {{#each prediction}}
+        <tr><td>{{linkUser this.user.username}} predicted that the {{linkTeam this.winner.name}}
+            would win against the {{linkTeam this.loser.name}} on {{linkGame this.game.gameId this.game.date}}
+        </td></tr>
+    {{/each}}
+</table>

@@ -142,7 +142,7 @@ function makeTitle(gamecode){
 }
 
 router.post('/clear', function(req, res){
-    Promise.all([Game.remove({}), Player.remove({}), Team.remove({})/*, Prediction.remove({})*/])
+    Promise.all([Game.remove({}), Player.remove({}), Team.remove({}), Prediction.remove({})])
         .then(function(){
             return res.redirect('/admin');
         })

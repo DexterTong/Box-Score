@@ -10,6 +10,7 @@ var Team = require(path.join(__dirname, '..', 'models', 'team'));
 var Game = require(path.join(__dirname, '..', 'models', 'game'));
 var Prediction = require(path.join(__dirname, '..', 'models', 'prediction'));
 var auth = require(path.join(__dirname, '..', 'middleware', 'authentication'));
+var predictionHelper = require(path.join(__dirname, '..', 'helpers', 'predictionHelper'));
 
 router.use(auth.isAuthenticated);
 
@@ -36,6 +37,17 @@ function getDate(date){
 
 router.get('/:gameId', function(req, res) {
     Game.findOne({gameId: req.params.gameId}, function(err, game){
+        var predictionsPromise;
+        var predictions = game.predictions.map(function(predictionId){
+            return Prediction.findById(predictionId);
+        });
+        predictionsPromise = Promise.all(predictions)
+            .then(function(preds){
+                var annotatedPredictions = preds.map(function(prediction){
+                    return predictionHelper.getReferences(prediction);
+                });
+                return Promise.all(annotatedPredictions);
+            });
         var title = game.title;
         var p1 = Team.findById(game.homeTeam).exec();
         var p2 = Team.findById(game.awayTeam).exec();
@@ -43,12 +55,12 @@ router.get('/:gameId', function(req, res) {
             .then(function(teams){
                 var p3 = Player.find({_id: {$in: teams[0].players}}).exec();
                 var p4 = Player.find({_id: {$in: teams[1].players}}).exec();
-                Promise.all([p3, p4])
-                    .then(function(players){
-                        teams[0].players = players[0];
-                        teams[1].players = players[1];
+                Promise.all([p3, p4, predictionsPromise])
+                    .then(function(results){
+                        teams[0].players = results[0];
+                        teams[1].players = results[1];
                         return res.render(path.join('game', 'game'),
-                            {title:title, game:game, homeTeam:teams[0], awayTeam:teams[1]});
+                            {title:title, game:game, homeTeam:teams[0], awayTeam:teams[1], prediction:results[2]});
                     });
             });
     });

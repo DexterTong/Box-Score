@@ -14,9 +14,11 @@
 </table>
 <h4>Predictions</h4>
 <table>
-    {{#each game.predictions}}
+    {{#each prediction}}
         {{!TODO: replace foo with relevant thing}}
-        <tr><td>{{this}}</td></tr>
+        <tr><td>{{linkUser this.user.username}} thinks that the {{linkTeam this.winner.name}}
+            will win this game against the {{linkTeam this.loser.name}}
+        </td></tr>
     {{/each}}
 </table>
 <h4>Add a Prediction</h4>

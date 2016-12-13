@@ -17,63 +17,62 @@ Never again will your friends be able to wave off your gloating with "I don't re
 just wave this web app in their face!
  
 Now that you've survived the sales pitch, here's the basics: Users will need to create and log into accounts to use 
-this web app. They'll have a list of friends (other users) and be able to make 'bets' (once again, there is no money
-involved) on various aspects NBA game outcomes, like final score, individual player stats, etc. After the game 
-has 
-finished, users will be able to see the results of their bets and how they compare with their friends. These 
-results will be saved for posterity or something, I don't know.
+this web app. They'll ~~have a list of friends (other users) and~~ be able to make 'bets' (once again, there is no money
+involved) on which team will win the game. They can see basic information about the games and teams as well, and see 
+the predictions others have made. 
+~~various aspects NBA game outcomes, like final score, individual player 
+stats, etc. After the game has finished, users will be able to see the results of their bets and how they compare with their friends. These 
+results will be saved for posterity or something, I don't know.~~
   
 ##Data Model
 
 ```javascript
 var User = new Schema({
-    // username and password come from passport
+    firstName: {type: String, default: ""},
+    lastName: {type: String, default: ""},
+    favoriteTeam: { type: mongoose.Schema.Types.ObjectId, ref: 'Team', default: null },
+    //predictions made by this user
     predictions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Prediction' }],
-    // friendship is reciprocal: B is a friend of A implies A is a friend of B
     friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    score : { type: Number, default: 0}
+    score : { type: Number, default: 0},
+    isAdmin : {type: Boolean, default: false}
 });
 
 //Represents a team and its players
 var Team = new Schema({
-    players: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Player' }]
+        //team ID used by NBA API
+        teamId: {type: Number, required: true},
+        abbreviation: {type: String, required: true},
+        name: {type: String, required: true},
+        city: {type: String, required: true},
+        players: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Player', default: [] }]
 });
 
-//Represents an active basketball player
-var Player = new Schema({
-    name: String,
-    team: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' }
-    //Will probably want to store stuff like basic stats or something too
-});
 
 //Represents a single basketball game, or at least the parts we care about
-var Game = new Schema({
-    //The 2 teams participating in the game
-    teams: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Team' }],
-    //When is the game? Will let us know when to check final score
-    date: String,
+var Game = new mongoose.Schema({
+    //game ID used by NBA API
+    gameId: {type: Number},
+    homeTeam: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' },
+    awayTeam: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' },
+    season: {type: Number},
+    title: String,
+    date: Date,
     time: String,
-    //Has the game started, is it ongoing, or finished?
     status: String,
-    //Keep track of which predictions are for this game
-    predictions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Prediction' }]
-    //May want to include stuff like box score and all, or just request it from NBA website
+    //List of user-made predictions for this game
+    predictions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Prediction', default: [] }]
 });
+    
 
 //A single prediction or 'bet', will need generalization later, probably
-var Prediction = new Schema({
-    //Whose prediction is it?
+var Prediction = new mongoose.Schema({
+    //User who made prediction
     user: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     //Which game is it for?
     game: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Game' }],
-    //Which player is it for?
-    player: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Player' }],
-    //Details of the prediction
-    stat: String,
-    value: Number,
-    OverUnder: Boolean,
-    //How much is it worth?
-    score: Number
+    //Who does user predict won?
+    winner: [{type: String, enum: ['home', 'away']}]
 });
 ```
 
@@ -88,15 +87,17 @@ I will probably need more pages and elements than the wireframes suggest.
 ##Site Map
 ```
 Index
-├── Login
-├── Register
-├── About
-├── Game
-│   └── $gameId
-└── User
-    └── $username
-        ├── About
-        └── Settings
+├── admin: site administrator tools
+├── game: list of all of today's basketball games
+│   └── <specific game>: information about this game
+├── login
+├── register
+├── settings
+├── team: list of all basketball teams
+│   └── <specific team>: information about this team
+└── user: search by username
+    └── <specific user>: information about this user
+
 ```
 Made with the `tree` utility and creating empty directories.
 
@@ -104,31 +105,20 @@ Made with the `tree` utility and creating empty directories.
 
 First, all users must log in. Then, they can:
 
-a. Select an upcoming game and make one or more predictions of some parameter of the game
+a. Select an upcoming game and make a prediction on the outcome of the game
 
-b. After a game, they can see if their prediction was right or wrong and points earned
+b. View the profiles of themselves and other users, and the predictions that they have made
 
-c. Add and delete friends
+c. Update their settings to reflect their name and favorite team (last name visible only to self)
 
-d. View their own activity feed, or those of their friends, containing previous predictions and outcomes
+d. The site admin can update and clear the database through an admin-only page
  
 ##Research
-* **JavaScript Unit Testing: 4 points**
-    * To speed up development by not having to manually run tests, and catch more errors
-    * [Mocha](https://github.com/mochajs/mocha) most likely, since we've used it before
-    * Will need to test stuff like scorekeeping and authentication
 
 * **User Authentication: 6 points**
     * Obviously, having user accounts with saved info means we need authentication
     * I will use [Passport.js](http://passportjs.org/) to implement user authentication
-    * Handling credentials internally is probably the easiest (local strategy), but OAuth may make more sense if this
-     were a real app
-     
-* **CSS Framework: 2 points**
-    * To provide an aesthetically pleasing and usable interface across form factors
-    * Implement [Material Design](https://material.google.com/) visual elements and appropriate layouts for both 
-    small and large screens
-    * Possible frameworks: [Materialize](http://materializecss.com/), [MUI](https://www.muicss.com/), [MDL](https://getmdl.io/index.html)
+    * Handle credentials internally (local strategy)
     
 * **Server-Side Javascript: 3 points**
     * To get NBA box scores, player stats, and other necessary data from the NBA website
@@ -136,11 +126,5 @@ d. View their own activity feed, or those of their friends, containing previous 
     * It is simply called [nba](https://www.npmjs.com/package/nba)
     * The NBA API is public (and keyless), but not officially documented and subject to change, so I hope these 
     people take care of it for me
-    * I'm not sure yet how difficult it is to use, so the point value is a stand-in
+    * Instead of using the (unofficial) NBA API, I used this package, which wraps said API
     
-* ***External API: 5 points***
-    * *I will only do this if the nba package does not work out*
-    * Through tedious manual inspection of pages on [stats.nba.com](http://stats.nba.com/), it seems possible to 
-    figure out the correct API calls for the data I need
-    * I'd rather not have to go this route, because it sounds difficult
-    * I could also write a web scraper too, but that seems inefficient

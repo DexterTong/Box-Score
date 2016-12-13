@@ -19,11 +19,11 @@ hbs.registerHelper('linkTeam', function(teamName){
     return new hbs.SafeString('<a href="/team/' + teamName + '">' + teamName + '</a>');
 });
 
-hbs.registerHelper('linkPlayer', function(playerId){
+/*hbs.registerHelper('linkPlayer', function(playerId){
     return new hbs.SafeString('<a href="/player/' + playerId + '">' + playerId + '</a>');
-});
+});*/
 
-hbs.registerHelper('linkPrediction', function(predictionId){
+hbs.registerHelper('linkPrediction', function(prediction){
     return new hbs.SafeString('<a href="/prediction/' + predictionId + '">' + predictionId + '</a>');
 });
 

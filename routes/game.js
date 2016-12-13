@@ -8,6 +8,7 @@ var User = require(path.join(__dirname, '..', 'models', 'user'));
 var Player = require(path.join(__dirname, '..', 'models', 'player'));
 var Team = require(path.join(__dirname, '..', 'models', 'team'));
 var Game = require(path.join(__dirname, '..', 'models', 'game'));
+var Prediction = require(path.join(__dirname, '..', 'models', 'prediction'));
 var auth = require(path.join(__dirname, '..', 'middleware', 'authentication'));
 
 router.use(auth.isAuthenticated);
@@ -17,14 +18,12 @@ router.get('/', function (req, res) {
     Game.find({}, function(err, games){
         var gamesByDate = games.reduce(function(groupedByDate, game){
             var key = getDate(game.date);
-            console.log(key);
             if(groupedByDate[key])
                 groupedByDate[key].push(game);
             else
                 groupedByDate[key] = [game];
             return groupedByDate;
         }, {});
-        //console.log(Object.getOwnPropertyNames(gamesByDate));
         return res.render(path.join('game', 'index'), {title: title, date: gamesByDate});
     });
 });
@@ -57,8 +56,37 @@ router.get('/:gameId', function(req, res) {
 
 router.post('/:gameId/prediction', function(req, res) {
     if(!req.body.winner)
-        return res.redirect('.');
+        return res.redirect('/game/' + req.params.gameId);
+    Game.findOne({gameId: req.params.gameId}).exec()
+        .then(function(game){
+            var prediction = {
+                user: req.user._id,
+                game: game._id,
+                winner: req.body.winner
+            };
+            Prediction.findOneAndUpdate({game: game._id, user: req.user._id}, prediction, {new: true, upsert: true})
+                .then(function(newPrediction){
+                    var p1, p2;
+                    var predictions = req.user.predictions;
+                    if(predictions.indexOf(newPrediction._id.toString()) < 0) {
+                        predictions.push(newPrediction._id);
+                        p1 = User.findByIdAndUpdate(req.user._id, {predictions: predictions});
+                    }
+                    var gamePredictions = game.predictions;
+                    if(gamePredictions.indexOf(newPrediction._id.toString()) < 0) {
+                        gamePredictions.push(newPrediction._id);
+                        p2 = Game.findByIdAndUpdate(game._id, {predictions: gamePredictions});
+                    }
+                    Promise.all([p1, p2])
+                        .then(function(){
+                            return res.redirect('/game/' + req.params.gameId);
+                        })
+                })
+                .catch(function(err){
+                    return res.status(500);
+            });
 
+        })
 });
 
 module.exports = router;

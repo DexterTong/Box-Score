@@ -14,14 +14,15 @@
 </table>
 <h4>Predictions</h4>
 <table>
-    {{#each prediction}}
-        <tr><td>{{linkPrediction}}</td></tr>
+    {{#each game.predictions}}
+        {{!TODO: replace foo with relevant thing}}
+        <tr><td>{{this}}</td></tr>
     {{/each}}
 </table>
 <h4>Add a Prediction</h4>
 <form method="post" action="{{game.gameId}}/prediction">
     Who will win this game?<br>
-    <input type="radio" name="winner" value={{homeTeam.teamId}}>{{homeTeam.city}} {{homeTeam.name}}<br>
-    <input type="radio" name="winner" value={{awayTeam.teamId}}>{{awayTeam.city}} {{awayTeam.name}}<br>
+    <input type="radio" name="winner" value=home>{{homeTeam.city}} {{homeTeam.name}}<br>
+    <input type="radio" name="winner" value=away>{{awayTeam.city}} {{awayTeam.name}}<br>
     <input type="submit">
 </form>

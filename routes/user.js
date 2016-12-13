@@ -2,23 +2,26 @@ var express = require('express');
 var passport = require('passport');
 var path = require('path');
 var router = express.Router();
+var Promise = require('promise');
 var User = require(path.join(__dirname, '..', 'models', 'user'));
 var Team = require(path.join(__dirname, '..', 'models', 'team'));
+var Prediction = require(path.join(__dirname, '..', 'models', 'prediction'));
 var auth = require(path.join(__dirname, '..', 'middleware', 'authentication'));
+var predictionHelper = require(path.join(__dirname, '..', 'helpers', 'predictionHelper'));
 
 router.use(auth.isAuthenticated);
 
 //Search for users
-router.get('/', function(req, res){
+router.get('/', function (req, res) {
     var title;
-    if(req.query.username) {
+    if (req.query.username) {
         title = 'Results for \'' + req.query.username + '\'';
-        User.find({username: {"$regex": req.query.username, "$options": "i" }}, function(err, users){
-           if(err) {
-               console.log(err);
-               return res.status(500);
-           }
-           return res.render(path.join('user', 'index'), {title: title, user: users});
+        User.find({username: {"$regex": req.query.username, "$options": "i"}}, function (err, users) {
+            if (err) {
+                console.log(err);
+                return res.status(500);
+            }
+            return res.render(path.join('user', 'index'), {title: title, user: users});
         });
     }
     else {
@@ -29,27 +32,40 @@ router.get('/', function(req, res){
 
 //TODO: display user info, bets, etc
 //TODO: handle case when user data fields such as fav team are undefined
-router.get('/:user', function(req, res){
-    User.findOne({username: req.params.user}, function(err, user){
-        if(err) {
+router.get('/:user', function (req, res) {
+    User.findOne({username: req.params.user}, function (err, user) {
+        if (err) {
             console.log(err);
             return res.status(500);
         }
-        if(!user) {
+        if (!user) {
             // user requested DNE
             return res.redirect('/');
         }
-        Team.findById(user.favoriteTeam, function(err, team){
-            if(err) {
-                console.log(err);
-                return res.status(500);
-            }
-            var teamName;
-            if(team)
-                teamName = team.city + ' ' + team.name;
-            var title = user.username + '\'s page';
-            return res.render(path.join('user', 'user'), {user: user, teamName: teamName, title: title});
+        var predictions = user.predictions.map(function (predictionId) {
+            return Prediction.findById(predictionId);
         });
+        var predictionsPromise = Promise.all(predictions)
+            .then(function (preds) {
+                var annotatedPredictions = preds.map(function (prediction) {
+                    return predictionHelper.getReferences(prediction);
+                });
+                return Promise.all(annotatedPredictions);
+            });
+        Team.findById(user.favoriteTeam)
+            .then(function (team) {
+                var teamName;
+                if (team)
+                    teamName = team.city + ' ' + team.name;
+                var title = user.username + '\'s page';
+                return res.render(path.join('user', 'user'), {user: user, teamName: teamName, title: title});
+            })
+            .catch(function (err) {
+                if (err) {
+                    console.log(err);
+                    return res.status(500);
+                }
+            });
     });
 });
 

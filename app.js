@@ -55,21 +55,7 @@ app.use(function (req, res, next) {
     next(err);
 });
 
-// error handlers
-
-// development error handler
-// will print stacktrace
-app.use(function (err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-        message: err.message,
-        error: err
-    });
-});
-
-// production error handler
-// no stacktraces leaked to user
-if (process.env.NODE_ENV === 'PRODUCTION') {
+if (process.env.NODE_ENV === 'PRODUCTION_A' || process.env.NODE_ENV === 'PRODUCTION_B') {
     app.use(function (err, req, res, next) {
         res.status(err.status || 500);
         res.render('error', {
@@ -78,5 +64,14 @@ if (process.env.NODE_ENV === 'PRODUCTION') {
         });
     });
 }
+else
+    app.use(function (err, req, res, next) {
+        res.status(err.status || 500);
+        res.render('error', {
+            message: err.message,
+            error: err
+        });
+    });
+
 
 module.exports = app;
